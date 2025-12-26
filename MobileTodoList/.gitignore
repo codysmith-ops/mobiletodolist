@@ -64,3 +64,8 @@ yarn-error.log
 
 # testing
 /coverage
+
+# Environment variables - NEVER COMMIT
+.env
+.env.local
+.env.*.local
