@@ -1,0 +1,23 @@
+objc[40673]: Class _TtC12DVTDownloads16CryptexDiskImage is implemented in both /Applications/Xcode-15.4.app/Contents/SharedFrameworks/DVTDownloads.framework/Versions/A/DVTDownloads (0x11144cdb8) and /Library/Developer/PrivateFrameworks/DVTDownloads.framework/Versions/A/DVTDownloads (0x11986f920). This may cause spurious casting failures and mysterious crashes. One of the duplicates must be removed or renamed.
+objc[40673]: Class _TtC12DVTDownloads14DownloadsAsset is implemented in both /Applications/Xcode-15.4.app/Contents/SharedFrameworks/DVTDownloads.framework/Versions/A/DVTDownloads (0x11144dad8) and /Library/Developer/PrivateFrameworks/DVTDownloads.framework/Versions/A/DVTDownloads (0x1198701e8). This may cause spurious casting failures and mysterious crashes. One of the duplicates must be removed or renamed.
+objc[40673]: Class _TtC12DVTDownloads15CommandLineTool is implemented in both /Applications/Xcode-15.4.app/Contents/SharedFrameworks/DVTDownloads.framework/Versions/A/DVTDownloads (0x11144d988) and /Library/Developer/PrivateFrameworks/DVTDownloads.framework/Versions/A/DVTDownloads (0x119870638). This may cause spurious casting failures and mysterious crashes. One of the duplicates must be removed or renamed.
+objc[40673]: Class _TtC12DVTDownloads14DiskImageTools is implemented in both /Applications/Xcode-15.4.app/Contents/SharedFrameworks/DVTDownloads.framework/Versions/A/DVTDownloads (0x11144d7b8) and /Library/Developer/PrivateFrameworks/DVTDownloads.framework/Versions/A/DVTDownloads (0x1198706f0). This may cause spurious casting failures and mysterious crashes. One of the duplicates must be removed or renamed.
+objc[40673]: Class _TtC12DVTDownloads23SimulatorRuntimeCryptex is implemented in both /Applications/Xcode-15.4.app/Contents/SharedFrameworks/DVTDownloads.framework/Versions/A/DVTDownloads (0x11144ddb0) and /Library/Developer/PrivateFrameworks/DVTDownloads.framework/Versions/A/DVTDownloads (0x1198729a8). This may cause spurious casting failures and mysterious crashes. One of the duplicates must be removed or renamed.
+Command line invocation:
+    /Applications/Xcode-15.4.app/Contents/Developer/usr/bin/xcodebuild -workspace MobileTodoList.xcworkspace -scheme MobileTodoList -configuration Debug -destination "generic/platform=iOS Simulator" -derivedDataPath build CODE_SIGN_IDENTITY= CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO
+
+User defaults from command line:
+    IDEDerivedDataPathOverride = /Users/codysmith/MobileTodoListApp/MobileTodoList/ios/build
+    IDEPackageSupportUseBuiltinSCM = YES
+
+Build settings from command line:
+    CODE_SIGN_IDENTITY = 
+    CODE_SIGNING_ALLOWED = NO
+    CODE_SIGNING_REQUIRED = NO
+
+2025-12-26 10:09:47.740 xcodebuild[40673:1453564] Writing error result bundle to /var/folders/2f/_lfldswd3k948nhb24gxf8nh0000gn/T/ResultBundle_2025-26-12_10-09-0047.xcresult
+xcodebuild: error: Unable to find a destination matching the provided destination specifier:
+		{ generic:1, platform:iOS Simulator }
+
+	Ineligible destinations for the "MobileTodoList" scheme:
+		{ platform:iOS, id:dvtdevice-DVTiPhonePlaceholder-iphoneos:placeholder, name:Any iOS Device, error:iOS 17.5 is not installed. To use with Xcode, first download and install the platform }
