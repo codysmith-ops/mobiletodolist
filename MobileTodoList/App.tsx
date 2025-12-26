@@ -8,8 +8,10 @@ import React, {
 import {
   Alert,
   FlatList,
+  Image,
   KeyboardAvoidingView,
   Linking,
+  PermissionsAndroid,
   Platform,
   SafeAreaView,
   StatusBar,
@@ -21,6 +23,8 @@ import {
 } from 'react-native';
 import Geolocation from '@react-native-community/geolocation';
 import {getDistance} from 'geolib';
+import {launchCamera} from 'react-native-image-picker';
+import MlkitOcr from 'react-native-mlkit-ocr';
 import {useTodoStore, NavPreference, Task} from './src/store';
 import {palette, radius, shadow, spacing} from './src/theme';
 import {useVoiceInput} from './src/hooks/useVoiceInput';
@@ -42,6 +46,9 @@ const App = (): React.JSX.Element => {
   const [locationLabel, setLocationLabel] = useState('');
   const [latitude, setLatitude] = useState('');
   const [longitude, setLongitude] = useState('');
+  const [imageUri, setImageUri] = useState<string | undefined>();
+  const [productBrand, setProductBrand] = useState('');
+  const [productDetails, setProductDetails] = useState('');
   const [routePlan, setRoutePlan] = useState<Task[]>([]);
   const [routeMessage, setRouteMessage] = useState<string | null>(null);
   const [currentPosition, setCurrentPosition] = useState<
@@ -163,6 +170,9 @@ const App = (): React.JSX.Element => {
       locationLabel: locationLabel.trim() || undefined,
       latitude: Number.isFinite(latNum) ? latNum : undefined,
       longitude: Number.isFinite(lngNum) ? lngNum : undefined,
+      imageUri,
+      productBrand: productBrand.trim() || undefined,
+      productDetails: productDetails.trim() || undefined,
     });
 
     setTitle('');
@@ -170,6 +180,9 @@ const App = (): React.JSX.Element => {
     setLocationLabel('');
     setLatitude('');
     setLongitude('');
+    setImageUri(undefined);
+    setProductBrand('');
+    setProductDetails('');
     reset();
   }, [
     title,
@@ -177,6 +190,9 @@ const App = (): React.JSX.Element => {
     latitude,
     longitude,
     locationLabel,
+    imageUri,
+    productBrand,
+    productDetails,
     addTask,
     reset,
   ]);
@@ -198,6 +214,57 @@ const App = (): React.JSX.Element => {
       Alert.alert('Location unavailable', 'Waiting for GPS signal...');
     }
   }, [currentPosition]);
+
+  const takePhoto = useCallback(async () => {
+    try {
+      if (Platform.OS === 'android') {
+        const granted = await PermissionsAndroid.request(
+          PermissionsAndroid.PERMISSIONS.CAMERA,
+        );
+        if (granted !== PermissionsAndroid.RESULTS.GRANTED) {
+          Alert.alert('Permission denied', 'Camera permission is required');
+          return;
+        }
+      }
+
+      const result = await launchCamera({
+        mediaType: 'photo',
+        saveToPhotos: false,
+        quality: 0.8,
+      });
+
+      if (result.didCancel || !result.assets?.[0]?.uri) {
+        return;
+      }
+
+      const photoUri = result.assets[0].uri;
+      setImageUri(photoUri);
+
+      // Perform text recognition
+      const recognitionResult = await MlkitOcr.detectFromUri(photoUri);
+      
+      // Extract brand and product details
+      const allText = recognitionResult.map(block => block.text).join(' ');
+      
+      // Simple heuristic: first line or first few words are likely brand/product
+      const lines = allText.split('\n').filter(l => l.trim());
+      if (lines.length > 0) {
+        setProductBrand(lines[0]);
+        if (lines.length > 1) {
+          setProductDetails(lines.slice(1).join(' '));
+        }
+        // Auto-set title if empty
+        if (!title) {
+          setTitle(lines[0]);
+        }
+      }
+
+      Alert.alert('Photo captured', 'Product details extracted from image');
+    } catch (error) {
+      console.error('Camera error:', error);
+      Alert.alert('Error', 'Failed to capture or process photo');
+    }
+  }, [title]);
 
   const optimizeRoute = useCallback(() => {
     if (!currentPosition) {
@@ -282,6 +349,20 @@ const App = (): React.JSX.Element => {
 
         <View style={styles.card}>
           <Text style={styles.cardTitle}>Add item</Text>
+          {imageUri && (
+            <View style={styles.imagePreview}>
+              <Image source={{uri: imageUri}} style={styles.previewImage} />
+              <TouchableOpacity
+                style={styles.removeImage}
+                onPress={() => {
+                  setImageUri(undefined);
+                  setProductBrand('');
+                  setProductDetails('');
+                }}>
+                <Text style={styles.removeImageText}>✕</Text>
+              </TouchableOpacity>
+            </View>
+          )}
           <TextInput
             placeholder="What do you need?"
             placeholderTextColor={palette.muted}
@@ -296,6 +377,25 @@ const App = (): React.JSX.Element => {
             onChangeText={setNote}
             style={styles.input}
           />
+          {productBrand ? (
+            <TextInput
+              placeholder="Product brand"
+              placeholderTextColor={palette.muted}
+              value={productBrand}
+              onChangeText={setProductBrand}
+              style={styles.input}
+            />
+          ) : null}
+          {productDetails ? (
+            <TextInput
+              placeholder="Product details"
+              placeholderTextColor={palette.muted}
+              value={productDetails}
+              onChangeText={setProductDetails}
+              style={styles.input}
+              multiline
+            />
+          ) : null}
           <TextInput
             placeholder="Location label (store, service)"
             placeholderTextColor={palette.muted}
@@ -324,6 +424,10 @@ const App = (): React.JSX.Element => {
           <GhostButton
             label="📍 Use current location"
             onPress={useCurrentLocation}
+          />
+          <GhostButton
+            label="📸 Take photo"
+            onPress={takePhoto}
           />
 
           <View style={styles.row}>
@@ -631,6 +735,32 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     color: palette.text,
     marginBottom: spacing.md,
+  },
+  imagePreview: {
+    position: 'relative',
+    marginBottom: spacing.md,
+  },
+  previewImage: {
+    width: '100%',
+    height: 200,
+    borderRadius: radius.md,
+    resizeMode: 'cover',
+  },
+  removeImage: {
+    position: 'absolute',
+    top: spacing.xs,
+    right: spacing.xs,
+    backgroundColor: 'rgba(0,0,0,0.6)',
+    width: 30,
+    height: 30,
+    borderRadius: 15,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  removeImageText: {
+    color: '#FFF',
+    fontSize: 18,
+    fontWeight: '700',
   },
   input: {
     backgroundColor: '#F8FAFC',

@@ -11,6 +11,9 @@ export type Task = {
   locationLabel?: string;
   latitude?: number;
   longitude?: number;
+  imageUri?: string;
+  productBrand?: string;
+  productDetails?: string;
 };
 
 type AddTaskInput = {
@@ -19,6 +22,9 @@ type AddTaskInput = {
   locationLabel?: string;
   latitude?: number;
   longitude?: number;
+  imageUri?: string;
+  productBrand?: string;
+  productDetails?: string;
 };
 
 type TodoStore = {
@@ -45,6 +51,9 @@ export const useTodoStore = create<TodoStore>((set, get) => ({
       locationLabel: input.locationLabel,
       latitude: input.latitude,
       longitude: input.longitude,
+      imageUri: input.imageUri,
+      productBrand: input.productBrand,
+      productDetails: input.productDetails,
       completed: false,
     };
     set(state => ({tasks: [task, ...state.tasks]}));
