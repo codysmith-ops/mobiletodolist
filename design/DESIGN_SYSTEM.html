@@ -1,0 +1,834 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Deadstock Zero - Complete Design System</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { 
+      font-family: -apple-system, BlinkMacSystemFont, 'Inter', 'Segoe UI', sans-serif;
+      background: #f8fafc;
+      padding: 40px;
+      line-height: 1.6;
+    }
+    .container { max-width: 1400px; margin: 0 auto; }
+    
+    h1 { 
+      font-size: 42px; 
+      font-weight: 700; 
+      margin-bottom: 12px;
+      color: #0F172A;
+      font-family: 'Montserrat', sans-serif;
+    }
+    
+    .subtitle {
+      font-size: 18px;
+      color: #64748B;
+      margin-bottom: 60px;
+    }
+    
+    .section {
+      background: white;
+      border-radius: 12px;
+      padding: 40px;
+      margin-bottom: 40px;
+      box-shadow: 0 2px 8px rgba(15, 23, 42, 0.04);
+      border: 1px solid #E5E7EB;
+    }
+    
+    .section-title {
+      font-size: 24px;
+      font-weight: 700;
+      color: #0F172A;
+      margin-bottom: 24px;
+      font-family: 'Montserrat', sans-serif;
+    }
+    
+    .subsection-title {
+      font-size: 16px;
+      font-weight: 700;
+      color: #0F172A;
+      margin: 32px 0 16px 0;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      font-size: 12px;
+      color: #64748B;
+    }
+    
+    .grid { display: grid; gap: 20px; }
+    .grid-2 { grid-template-columns: repeat(2, 1fr); }
+    .grid-3 { grid-template-columns: repeat(3, 1fr); }
+    .grid-4 { grid-template-columns: repeat(4, 1fr); }
+    
+    /* Brand Colors */
+    .color-card {
+      border-radius: 8px;
+      padding: 20px;
+      border: 1px solid #E5E7EB;
+    }
+    .color-swatch {
+      width: 100%;
+      height: 100px;
+      border-radius: 8px;
+      margin-bottom: 12px;
+      border: 1px solid rgba(0,0,0,0.1);
+    }
+    .color-name {
+      font-size: 14px;
+      font-weight: 600;
+      color: #0F172A;
+      margin-bottom: 4px;
+    }
+    .color-hex {
+      font-size: 14px;
+      font-family: monospace;
+      color: #5159B0;
+      font-weight: 600;
+    }
+    .color-usage {
+      font-size: 12px;
+      color: #64748B;
+      margin-top: 8px;
+    }
+    
+    /* Typography */
+    .type-example {
+      padding: 20px;
+      border: 1px solid #E5E7EB;
+      border-radius: 8px;
+      margin-bottom: 12px;
+    }
+    .type-label {
+      font-size: 11px;
+      color: #64748B;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 8px;
+    }
+    .type-code {
+      background: #1E293B;
+      color: #94A3B8;
+      padding: 8px 12px;
+      border-radius: 6px;
+      font-size: 11px;
+      font-family: monospace;
+      margin-top: 8px;
+    }
+    
+    /* Icons */
+    .icon-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+      gap: 16px;
+    }
+    .icon-card {
+      text-align: center;
+      padding: 20px;
+      border: 1px solid #E5E7EB;
+      border-radius: 8px;
+      transition: all 0.2s;
+    }
+    .icon-card:hover {
+      border-color: #5159B0;
+      box-shadow: 0 4px 12px rgba(81, 89, 176, 0.1);
+    }
+    .icon-name {
+      font-size: 11px;
+      color: #64748B;
+      margin-top: 12px;
+    }
+    
+    /* Alerts */
+    .alert {
+      padding: 16px 20px;
+      border-radius: 8px;
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      border: 1px solid;
+    }
+    .alert-critical {
+      background: rgba(220, 38, 38, 0.05);
+      border-color: #DC2626;
+      color: #DC2626;
+    }
+    .alert-warning {
+      background: rgba(217, 119, 6, 0.05);
+      border-color: #D97706;
+      color: #D97706;
+    }
+    .alert-success {
+      background: rgba(5, 150, 105, 0.05);
+      border-color: #059669;
+      color: #059669;
+    }
+    .alert-info {
+      background: rgba(129, 140, 248, 0.05);
+      border-color: #818CF8;
+      color: #818CF8;
+    }
+    .alert-icon {
+      width: 20px;
+      height: 20px;
+      flex-shrink: 0;
+    }
+    .alert-content {
+      flex: 1;
+    }
+    .alert-title {
+      font-weight: 600;
+      font-size: 14px;
+      margin-bottom: 4px;
+    }
+    .alert-message {
+      font-size: 13px;
+      opacity: 0.9;
+    }
+    
+    /* Buttons */
+    .button {
+      padding: 12px 24px;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 600;
+      border: 1px solid;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: inline-block;
+      text-align: center;
+      min-width: 140px;
+    }
+    .btn-primary {
+      background: #5159B0;
+      color: white;
+      border-color: #5159B0;
+    }
+    .btn-primary:hover {
+      background: #3d4389;
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(81, 89, 176, 0.3);
+    }
+    .btn-secondary {
+      background: white;
+      color: #5159B0;
+      border-color: #5159B0;
+    }
+    .btn-secondary:hover {
+      background: #EEF2FF;
+    }
+    .btn-ghost {
+      background: transparent;
+      color: #5159B0;
+      border-color: transparent;
+    }
+    .btn-ghost:hover {
+      background: #EEF2FF;
+    }
+    
+    /* Badges */
+    .badge {
+      display: inline-block;
+      padding: 6px 12px;
+      border-radius: 6px;
+      font-size: 13px;
+      font-weight: 600;
+      border: 1px solid;
+    }
+    .badge-primary {
+      background: #5159B0;
+      color: white;
+      border-color: #5159B0;
+    }
+    .badge-success {
+      background: rgba(5, 150, 105, 0.1);
+      color: #059669;
+      border-color: #059669;
+    }
+    .badge-warning {
+      background: rgba(217, 119, 6, 0.1);
+      color: #D97706;
+      border-color: #D97706;
+    }
+    .badge-danger {
+      background: rgba(220, 38, 38, 0.1);
+      color: #DC2626;
+      border-color: #DC2626;
+    }
+    
+    /* Cards */
+    .demo-card-light {
+      background: #F8FAFC;
+      padding: 24px;
+      border-radius: 12px;
+      border: 1px solid #E5E7EB;
+      box-shadow: 0 2px 8px rgba(15, 23, 42, 0.04);
+    }
+    .demo-card-dark {
+      background: #1E293B;
+      padding: 24px;
+      border-radius: 12px;
+      border: 1px solid #334155;
+      box-shadow: 0 4px 16px rgba(15, 23, 42, 0.15);
+      color: #F1F5F9;
+    }
+    
+    /* Code Block */
+    .code {
+      background: #1E293B;
+      color: #F1F5F9;
+      padding: 20px;
+      border-radius: 8px;
+      font-family: 'Monaco', monospace;
+      font-size: 13px;
+      line-height: 1.6;
+      overflow-x: auto;
+      margin-top: 12px;
+    }
+    .code .property { color: #F87171; }
+    .code .value { color: #34D399; }
+    .code .string { color: #FBBF24; }
+    .code .comment { color: #64748B; font-style: italic; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Deadstock Zero Design System</h1>
+    <div class="subtitle">Complete visual guide for fonts, colors, components, alerts, and styling standards</div>
+    
+    <!-- BRAND COLORS -->
+    <div class="section">
+      <div class="section-title">Brand Color Palette</div>
+      <p style="color: #64748B; margin-bottom: 24px;">Core brand colors only. Alert colors (red, yellow, green) are documented separately below.</p>
+      
+      <div class="grid grid-3">
+        <div class="color-card">
+          <div class="color-swatch" style="background: #5159B0;"></div>
+          <div class="color-name">Primary Indigo</div>
+          <div class="color-hex">#5159B0</div>
+          <div class="color-usage">Buttons, links, primary actions, borders on featured elements</div>
+        </div>
+        
+        <div class="color-card">
+          <div class="color-swatch" style="background: #818CF8;"></div>
+          <div class="color-name">Indigo Light</div>
+          <div class="color-hex">#818CF8</div>
+          <div class="color-usage">Labels on dark backgrounds, secondary highlights, AI recommendations</div>
+        </div>
+        
+        <div class="color-card">
+          <div class="color-swatch" style="background: #1E293B;"></div>
+          <div class="color-name">Dark Slate</div>
+          <div class="color-hex">#1E293B</div>
+          <div class="color-usage">Dark card backgrounds, sophisticated dark sections</div>
+        </div>
+        
+        <div class="color-card">
+          <div class="color-swatch" style="background: #F1F5F9;"></div>
+          <div class="color-name">White (on dark)</div>
+          <div class="color-hex">#F1F5F9</div>
+          <div class="color-usage">Primary text on dark backgrounds</div>
+        </div>
+        
+        <div class="color-card">
+          <div class="color-swatch" style="background: #94A3B8;"></div>
+          <div class="color-name">Slate Gray</div>
+          <div class="color-hex">#94A3B8</div>
+          <div class="color-usage">Secondary text on dark, descriptions, helper text</div>
+        </div>
+        
+        <div class="color-card">
+          <div class="color-swatch" style="background: #64748B;"></div>
+          <div class="color-name">Muted Gray</div>
+          <div class="color-hex">#64748B</div>
+          <div class="color-usage">Tertiary text, timestamps, subtle information</div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- TYPOGRAPHY -->
+    <div class="section">
+      <div class="section-title">Typography System</div>
+      
+      <div class="subsection-title">Font Families</div>
+      <div class="grid grid-2">
+        <div class="type-example">
+          <div class="type-label">Headings & Titles</div>
+          <div style="font-family: 'Montserrat', sans-serif; font-size: 32px; font-weight: 700;">Montserrat Bold</div>
+          <div class="type-code">font-family: 'Montserrat', sans-serif; font-weight: 700;</div>
+        </div>
+        
+        <div class="type-example">
+          <div class="type-label">Body Text & UI</div>
+          <div style="font-family: 'Inter', sans-serif; font-size: 16px;">Inter Regular - The quick brown fox jumps over the lazy dog</div>
+          <div class="type-code">font-family: 'Inter', sans-serif; (system fallback: -apple-system, BlinkMacSystemFont)</div>
+        </div>
+        
+        <div class="type-example">
+          <div class="type-label">Code & Technical</div>
+          <div style="font-family: monospace; font-size: 14px; color: #5159B0;">products/update → inventory/sync</div>
+          <div class="type-code">font-family: monospace; (Monaco, Menlo, Consolas)</div>
+        </div>
+      </div>
+      
+      <div class="subsection-title">Text Hierarchy</div>
+      <div class="type-example" style="background: white;">
+        <div style="font-size: 42px; font-weight: 700; color: #0F172A; margin-bottom: 12px;">Heading 1 - 42px Bold</div>
+        <div style="font-size: 32px; font-weight: 700; color: #0F172A; margin-bottom: 12px;">Heading 2 - 32px Bold</div>
+        <div style="font-size: 24px; font-weight: 700; color: #0F172A; margin-bottom: 12px;">Heading 3 - 24px Bold</div>
+        <div style="font-size: 18px; font-weight: 600; color: #0F172A; margin-bottom: 12px;">Subtitle - 18px Semibold</div>
+        <div style="font-size: 16px; color: #0F172A; margin-bottom: 12px;">Body Text - 16px Regular</div>
+        <div style="font-size: 14px; color: #64748B;">Secondary Text - 14px Regular</div>
+        <div style="font-size: 12px; color: #64748B; text-transform: uppercase; letter-spacing: 1px; margin-top: 12px;">Label Text - 12px Uppercase</div>
+      </div>
+      
+      <div class="subsection-title">Text on Dark Backgrounds</div>
+      <div class="type-example" style="background: #1E293B;">
+        <div style="font-size: 24px; font-weight: 700; color: #F1F5F9; margin-bottom: 8px;">Primary Text - #F1F5F9</div>
+        <div style="font-size: 16px; color: #94A3B8; margin-bottom: 8px;">Secondary Text - #94A3B8</div>
+        <div style="font-size: 14px; color: #64748B; margin-bottom: 12px;">Tertiary/Muted - #64748B</div>
+        <div style="font-size: 12px; color: #818CF8; text-transform: uppercase; letter-spacing: 1.2px;">Label Text - #818CF8</div>
+      </div>
+    </div>
+    
+    <!-- ICONS -->
+    <div class="section">
+      <div class="section-title">Icon System</div>
+      <p style="color: #64748B; margin-bottom: 24px;">All icons use SVG format with stroke-width: 2.5 or 3 for consistency. Brand color: #5159B0</p>
+      
+      <div class="icon-grid">
+        <div class="icon-card">
+          <svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="24" cy="24" r="18" stroke="#5159B0" stroke-width="3" fill="none"/>
+            <circle cx="24" cy="24" r="12" stroke="#5159B0" stroke-width="3" fill="none"/>
+            <circle cx="24" cy="24" r="4" fill="#5159B0"/>
+          </svg>
+          <div class="icon-name">AI / Target</div>
+        </div>
+        
+        <div class="icon-card">
+          <svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M24 8L26.4 20.8L38 16L30.4 26.4L42 30L28.8 34.4L32 46L24 36L16 46L19.2 34.4L6 30L17.6 26.4L10 16L21.6 20.8L24 8Z" fill="#5159B0"/>
+          </svg>
+          <div class="icon-name">Alert / Star</div>
+        </div>
+        
+        <div class="icon-card">
+          <svg width="48" height="48" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M13 2L3 14H12L11 22L21 10H12L13 2Z" stroke="#5159B0" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          <div class="icon-name">Webhook / Speed</div>
+        </div>
+        
+        <div class="icon-card">
+          <svg width="48" height="48" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="12" cy="12" r="10" stroke="#5159B0" stroke-width="2.5"/>
+            <path d="M12 6V12L16 14" stroke="#5159B0" stroke-width="2.5" stroke-linecap="round"/>
+          </svg>
+          <div class="icon-name">Time / Seasonal</div>
+        </div>
+        
+        <div class="icon-card">
+          <svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect x="6" y="10" width="8" height="28" fill="#5159B0" rx="2"/>
+            <rect x="20" y="18" width="8" height="20" fill="#5159B0" rx="2"/>
+            <rect x="34" y="14" width="8" height="24" fill="#5159B0" rx="2"/>
+          </svg>
+          <div class="icon-name">Analytics / Chart</div>
+        </div>
+        
+        <div class="icon-card">
+          <svg width="48" height="48" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M3 10L8 15L17 5" stroke="#5159B0" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          <div class="icon-name">Checkmark</div>
+        </div>
+        
+        <div class="icon-card">
+          <svg width="48" height="48" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M9 18H15" stroke="#5159B0" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M10 21H14" stroke="#5159B0" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M12 2C8.5 2 6 4.5 6 8C6 10.5 7 12 9 13.5V16C9 16.6 9.4 17 10 17H14C14.6 17 15 16.6 15 16V13.5C17 12 18 10.5 18 8C18 4.5 15.5 2 12 2Z" stroke="#5159B0" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+            <line x1="12" y1="1" x2="12" y2="2.5" stroke="#5159B0" stroke-width="2.5" stroke-linecap="round"/>
+            <line x1="4.5" y1="4.5" x2="5.5" y2="5.5" stroke="#5159B0" stroke-width="2.5" stroke-linecap="round"/>
+            <line x1="1.5" y1="8" x2="3.5" y2="8" stroke="#5159B0" stroke-width="2.5" stroke-linecap="round"/>
+            <line x1="19.5" y1="4.5" x2="18.5" y2="5.5" stroke="#5159B0" stroke-width="2.5" stroke-linecap="round"/>
+            <line x1="20.5" y1="8" x2="22.5" y2="8" stroke="#5159B0" stroke-width="2.5" stroke-linecap="round"/>
+          </svg>
+          <div class="icon-name">Lightbulb / Insight</div>
+        </div>
+        
+        <div class="icon-card">
+          <svg width="48" height="48" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <polyline points="3,18 7,12 11,15 16,8 21,4" stroke="#059669" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+            <polyline points="15,4 21,4 21,10" stroke="#059669" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          <div class="icon-name">Trend Up / Growth</div>
+        </div>
+        
+        <div class="icon-card">
+          <svg width="48" height="48" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <polyline points="21,6 16,12 12,9 7,16 3,20" stroke="#DC2626" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+            <polyline points="15,20 3,20 3,14" stroke="#DC2626" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          <div class="icon-name">Trend Down / Decline</div>
+        </div>
+        
+        <div class="icon-card">
+          <svg width="48" height="48" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect x="3" y="8" width="18" height="13" rx="2" stroke="#5159B0" stroke-width="2.5"/>
+            <path d="M3 8L12 14L21 8" stroke="#5159B0" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+            <line x1="7" y1="3" x2="7" y2="8" stroke="#5159B0" stroke-width="2.5" stroke-linecap="round"/>
+            <line x1="12" y1="3" x2="12" y2="8" stroke="#5159B0" stroke-width="2.5" stroke-linecap="round"/>
+            <line x1="17" y1="3" x2="17" y2="8" stroke="#5159B0" stroke-width="2.5" stroke-linecap="round"/>
+          </svg>
+          <div class="icon-name">Package / Inventory</div>
+        </div>
+        
+        <div class="icon-card">
+          <svg width="48" height="48" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <line x1="12" y1="2" x2="12" y2="22" stroke="#5159B0" stroke-width="2.5" stroke-linecap="round"/>
+            <path d="M17 5H9.5C7.01 5 5 7.01 5 9.5C5 11.99 7.01 14 9.5 14H14.5C16.99 14 19 16.01 19 18.5C19 20.99 16.99 23 14.5 23H6" stroke="#5159B0" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          <div class="icon-name">Dollar / Revenue</div>
+        </div>
+        
+        <div class="icon-card">
+          <svg width="48" height="48" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M17 21V19C17 17.9391 16.5786 16.9217 15.8284 16.1716C15.0783 15.4214 14.0609 15 13 15H5C3.93913 15 2.92172 15.4214 2.17157 16.1716C1.42143 16.9217 1 17.9391 1 19V21" stroke="#5159B0" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+            <circle cx="9" cy="7" r="4" stroke="#5159B0" stroke-width="2.5"/>
+            <path d="M23 21V19C22.9993 18.1137 22.7044 17.2528 22.1614 16.5523C21.6184 15.8519 20.8581 15.3516 20 15.13" stroke="#5159B0" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M16 3.13C16.8604 3.35031 17.623 3.85071 18.1676 4.55232C18.7122 5.25392 19.0078 6.11683 19.0078 7.005C19.0078 7.89318 18.7122 8.75608 18.1676 9.45769C17.623 10.1593 16.8604 10.6597 16 10.88" stroke="#5159B0" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          <div class="icon-name">Users / Team</div>
+        </div>
+        
+        <div class="icon-card">
+          <svg width="48" height="48" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="12" cy="12" r="3" stroke="#5159B0" stroke-width="2.5"/>
+            <path d="M12 1V3M12 21V23M4.22 4.22L5.64 5.64M18.36 18.36L19.78 19.78M1 12H3M21 12H23M4.22 19.78L5.64 18.36M18.36 5.64L19.78 4.22" stroke="#5159B0" stroke-width="2.5" stroke-linecap="round"/>
+          </svg>
+          <div class="icon-name">Settings / Config</div>
+        </div>
+        
+        <div class="icon-card">
+          <svg width="48" height="48" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M18 8C18 6.4087 17.3679 4.88258 16.2426 3.75736C15.1174 2.63214 13.5913 2 12 2C10.4087 2 8.88258 2.63214 7.75736 3.75736C6.63214 4.88258 6 6.4087 6 8C6 15 3 17 3 17H21C21 17 18 15 18 8Z" stroke="#5159B0" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M13.73 21C13.5542 21.3031 13.3019 21.5547 12.9982 21.7295C12.6946 21.9044 12.3504 21.9965 12 21.9965C11.6496 21.9965 11.3054 21.9044 11.0018 21.7295C10.6982 21.5547 10.4458 21.3031 10.27 21" stroke="#5159B0" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          <div class="icon-name">Bell / Notifications</div>
+        </div>
+        
+        <div class="icon-card">
+          <svg width="48" height="48" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect x="3" y="4" width="18" height="18" rx="2" stroke="#5159B0" stroke-width="2.5"/>
+            <line x1="16" y1="2" x2="16" y2="6" stroke="#5159B0" stroke-width="2.5" stroke-linecap="round"/>
+            <line x1="8" y1="2" x2="8" y2="6" stroke="#5159B0" stroke-width="2.5" stroke-linecap="round"/>
+            <line x1="3" y1="10" x2="21" y2="10" stroke="#5159B0" stroke-width="2.5"/>
+          </svg>
+          <div class="icon-name">Calendar / Schedule</div>
+        </div>
+        
+        <div class="icon-card">
+          <svg width="48" height="48" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="9" cy="21" r="2" stroke="#5159B0" stroke-width="2.5"/>
+            <circle cx="20" cy="21" r="2" stroke="#5159B0" stroke-width="2.5"/>
+            <path d="M1 1H5L7.68 14.39C7.77144 14.8504 8.02191 15.264 8.38755 15.5583C8.75318 15.8526 9.2107 16.009 9.68 16H19.4C19.8693 16.009 20.3268 15.8526 20.6925 15.5583C21.0581 15.264 21.3086 14.8504 21.4 14.39L23 6H6" stroke="#5159B0" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          <div class="icon-name">Cart / Orders</div>
+        </div>
+        
+        <div class="icon-card">
+          <svg width="48" height="48" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect x="1" y="8" width="22" height="11" rx="2" stroke="#5159B0" stroke-width="2.5"/>
+            <path d="M8 8V6C8 4.93913 8.42143 3.92172 9.17157 3.17157C9.92172 2.42143 10.9391 2 12 2C13.0609 2 14.0783 2.42143 14.8284 3.17157C15.5786 3.92172 16 4.93913 16 6V8" stroke="#5159B0" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M16 11V13M8 11V13" stroke="#5159B0" stroke-width="2.5" stroke-linecap="round"/>
+          </svg>
+          <div class="icon-name">Bag / Shopping</div>
+        </div>
+        
+        <div class="icon-card">
+          <svg width="48" height="48" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M16 3H21V8M4 20L21 3M21 16V21H16M8 21H3V16" stroke="#5159B0" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          <div class="icon-name">Expand / Fullscreen</div>
+        </div>
+      </div>
+      
+      <div class="subsection-title">Alert Icons (Colored)</div>
+      <div class="icon-grid">
+        <div class="icon-card">
+          <svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M24 8L26.4 20.8L38 16L30.4 26.4L42 30L28.8 34.4L32 46L24 36L16 46L19.2 34.4L6 30L17.6 26.4L10 16L21.6 20.8L24 8Z" fill="#DC2626"/>
+          </svg>
+          <div class="icon-name" style="color: #DC2626;">Critical Alert</div>
+        </div>
+        
+        <div class="icon-card">
+          <svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M24 8L26.4 20.8L38 16L30.4 26.4L42 30L28.8 34.4L32 46L24 36L16 46L19.2 34.4L6 30L17.6 26.4L10 16L21.6 20.8L24 8Z" fill="#D97706"/>
+          </svg>
+          <div class="icon-name" style="color: #D97706;">Warning Alert</div>
+        </div>
+        
+        <div class="icon-card">
+          <svg width="48" height="48" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M3 10L8 15L17 5" stroke="#059669" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          <div class="icon-name" style="color: #059669;">Success Check</div>
+        </div>
+        
+        <div class="icon-card">
+          <svg width="48" height="48" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M10.29 3.86L1.82 18C1.64537 18.3024 1.55296 18.6453 1.55199 18.9945C1.55101 19.3437 1.64149 19.6871 1.81442 19.9905C1.98735 20.2939 2.23675 20.5467 2.53773 20.7239C2.83871 20.9011 3.18082 20.9962 3.53 21H20.47C20.8192 20.9962 21.1613 20.9011 21.4623 20.7239C21.7633 20.5467 22.0127 20.2939 22.1856 19.9905C22.3585 19.6871 22.449 19.3437 22.448 18.9945C22.447 18.6453 22.3546 18.3024 22.18 18L13.71 3.86C13.5317 3.56611 13.2807 3.32312 12.9812 3.15448C12.6817 2.98585 12.3437 2.89725 12 2.89725C11.6563 2.89725 11.3183 2.98585 11.0188 3.15448C10.7193 3.32312 10.4683 3.56611 10.29 3.86Z" stroke="#D97706" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M12 9V13" stroke="#D97706" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            <circle cx="12" cy="17" r="1" fill="#D97706"/>
+          </svg>
+          <div class="icon-name" style="color: #D97706;">Warning Triangle</div>
+        </div>
+      </div>
+      
+      <div class="code">
+<span class="comment">// Standard icon implementation</span>
+&lt;svg width=<span class="string">"20"</span> height=<span class="string">"20"</span> viewBox=<span class="string">"0 0 20 20"</span> fill=<span class="string">"none"</span>&gt;
+  &lt;path d=<span class="string">"..."</span> stroke=<span class="string">"#5159B0"</span> <span class="property">stroke-width</span>=<span class="string">"3"</span> /&gt;
+&lt;/svg&gt;
+
+<span class="comment">// Alert icons use specific colors</span>
+&lt;svg width=<span class="string">"20"</span> height=<span class="string">"20"</span>&gt;
+  &lt;path fill=<span class="string">"#DC2626"</span> /&gt; <span class="comment">// Critical (red)</span>
+  &lt;path fill=<span class="string">"#D97706"</span> /&gt; <span class="comment">// Warning (orange)</span>
+  &lt;path stroke=<span class="string">"#059669"</span> /&gt; <span class="comment">// Success (green)</span>
+&lt;/svg&gt;</div>
+    </div>
+    
+    <!-- ALERTS & NOTIFICATIONS -->
+    <div class="section">
+      <div class="section-title">Alerts & Notifications</div>
+      <p style="color: #64748B; margin-bottom: 24px;">Alert-specific colors are only used in notification contexts.</p>
+      
+      <div class="subsection-title">Alert Types</div>
+      
+      <div class="alert alert-critical">
+        <svg class="alert-icon" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M24 8L26.4 20.8L38 16L30.4 26.4L42 30L28.8 34.4L32 46L24 36L16 46L19.2 34.4L6 30L17.6 26.4L10 16L21.6 20.8L24 8Z" fill="currentColor"/>
+        </svg>
+        <div class="alert-content">
+          <div class="alert-title">CRITICAL ALERT</div>
+          <div class="alert-message">Only 8 units left. Expected stockout in 6 days.</div>
+        </div>
+      </div>
+      
+      <div class="alert alert-warning">
+        <svg class="alert-icon" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M24 8L26.4 20.8L38 16L30.4 26.4L42 30L28.8 34.4L32 46L24 36L16 46L19.2 34.4L6 30L17.6 26.4L10 16L21.6 20.8L24 8Z" fill="currentColor"/>
+        </svg>
+        <div class="alert-content">
+          <div class="alert-title">REORDER RECOMMENDED</div>
+          <div class="alert-message">Order 138 units now to maintain stock levels.</div>
+        </div>
+      </div>
+      
+      <div class="alert alert-success">
+        <svg class="alert-icon" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M3 10L8 15L17 5" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        <div class="alert-content">
+          <div class="alert-title">SYNC COMPLETE</div>
+          <div class="alert-message">247 products updated successfully from Shopify.</div>
+        </div>
+      </div>
+      
+      <div class="alert alert-info">
+        <svg class="alert-icon" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="24" cy="24" r="18" stroke="currentColor" stroke-width="3" fill="none"/>
+          <circle cx="24" cy="24" r="12" stroke="currentColor" stroke-width="3" fill="none"/>
+          <circle cx="24" cy="24" r="4" fill="currentColor"/>
+        </svg>
+        <div class="alert-content">
+          <div class="alert-title">AI RECOMMENDATION</div>
+          <div class="alert-message">AI suggests ordering 245 units for seasonal demand spike.</div>
+        </div>
+      </div>
+      
+      <div class="subsection-title">Alert Color Codes (Use ONLY for alerts)</div>
+      <div class="grid grid-4">
+        <div class="color-card">
+          <div class="color-swatch" style="background: #DC2626;"></div>
+          <div class="color-name">Critical</div>
+          <div class="color-hex">#DC2626</div>
+        </div>
+        <div class="color-card">
+          <div class="color-swatch" style="background: #D97706;"></div>
+          <div class="color-name">Warning</div>
+          <div class="color-hex">#D97706</div>
+        </div>
+        <div class="color-card">
+          <div class="color-swatch" style="background: #059669;"></div>
+          <div class="color-name">Success</div>
+          <div class="color-hex">#059669</div>
+        </div>
+        <div class="color-card">
+          <div class="color-swatch" style="background: #818CF8;"></div>
+          <div class="color-name">Info</div>
+          <div class="color-hex">#818CF8</div>
+        </div>
+      </div>
+      
+      <div class="code">
+<span class="comment">// Alert implementation (dark card with colored border)</span>
+&lt;div style={{
+  <span class="property">padding</span>: <span class="string">'16px'</span>,
+  <span class="property">backgroundColor</span>: <span class="string">'#0F172A'</span>,
+  <span class="property">border</span>: <span class="string">'1px solid #DC2626'</span>, <span class="comment">// Use alert color</span>
+  <span class="property">borderRadius</span>: <span class="string">'8px'</span>
+}}&gt;
+  &lt;span style={{ <span class="property">color</span>: <span class="string">'#DC2626'</span> }}&gt;CRITICAL ALERT&lt;/span&gt;
+&lt;/div&gt;</div>
+    </div>
+    
+    <!-- BUTTONS & BADGES -->
+    <div class="section">
+      <div class="section-title">Buttons & Badges</div>
+      
+      <div class="subsection-title">Button Variants</div>
+      <div style="display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 24px;">
+        <button class="button btn-primary">Primary Button</button>
+        <button class="button btn-secondary">Secondary Button</button>
+        <button class="button btn-ghost">Ghost Button</button>
+      </div>
+      
+      <div class="code">
+<span class="comment">// Primary Button</span>
+<span class="property">padding</span>: <span class="string">'12px 24px'</span>,
+<span class="property">backgroundColor</span>: <span class="string">'#5159B0'</span>,
+<span class="property">color</span>: <span class="string">'#FFFFFF'</span>,
+<span class="property">border</span>: <span class="string">'1px solid #5159B0'</span>,
+<span class="property">borderRadius</span>: <span class="string">'8px'</span>,
+<span class="property">fontWeight</span>: <span class="string">600</span></div>
+      
+      <div class="subsection-title">Badge Variants</div>
+      <div style="display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 24px;">
+        <span class="badge badge-primary">Primary</span>
+        <span class="badge badge-success">Success</span>
+        <span class="badge badge-warning">Warning</span>
+        <span class="badge badge-danger">Critical</span>
+      </div>
+      
+      <div class="code">
+<span class="comment">// Badge (Compact)</span>
+<span class="property">padding</span>: <span class="string">'6px 12px'</span>,
+<span class="property">borderRadius</span>: <span class="string">'6px'</span>,
+<span class="property">fontSize</span>: <span class="string">'13px'</span>,
+<span class="property">fontWeight</span>: <span class="string">600</span>,
+<span class="property">border</span>: <span class="string">'1px solid'</span></div>
+    </div>
+    
+    <!-- CARD LAYOUTS -->
+    <div class="section">
+      <div class="section-title">Card Layouts</div>
+      
+      <div class="subsection-title">Light Card</div>
+      <div class="demo-card-light">
+        <div style="font-size: 14px; font-weight: 600; color: #0F172A; margin-bottom: 8px;">Card Title</div>
+        <div style="font-size: 14px; color: #64748B;">Light background card with subtle border and shadow</div>
+      </div>
+      
+      <div class="code">
+<span class="property">backgroundColor</span>: <span class="string">'#F8FAFC'</span>,
+<span class="property">padding</span>: <span class="string">'24px'</span>,
+<span class="property">borderRadius</span>: <span class="string">'12px'</span>,
+<span class="property">border</span>: <span class="string">'1px solid #E5E7EB'</span>,
+<span class="property">boxShadow</span>: <span class="string">'0 2px 8px rgba(15, 23, 42, 0.04)'</span></div>
+      
+      <div class="subsection-title">Dark Card</div>
+      <div class="demo-card-dark">
+        <div style="font-size: 12px; color: #818CF8; text-transform: uppercase; letter-spacing: 1.2px; margin-bottom: 12px;">Label Text</div>
+        <div style="font-size: 18px; font-weight: 600; color: #F1F5F9; margin-bottom: 8px;">Card Title</div>
+        <div style="font-size: 14px; color: #94A3B8;">Dark slate background with proper text hierarchy</div>
+      </div>
+      
+      <div class="code">
+<span class="property">backgroundColor</span>: <span class="string">'#1E293B'</span>, <span class="comment">// Slate, not pure black</span>
+<span class="property">padding</span>: <span class="string">'24px'</span>,
+<span class="property">borderRadius</span>: <span class="string">'12px'</span>,
+<span class="property">border</span>: <span class="string">'1px solid #334155'</span>,
+<span class="property">boxShadow</span>: <span class="string">'0 4px 16px rgba(15, 23, 42, 0.15)'</span></div>
+    </div>
+    
+    <!-- SPACING & SIZING -->
+    <div class="section">
+      <div class="section-title">Spacing & Sizing Standards</div>
+      
+      <div class="grid grid-2">
+        <div>
+          <div class="subsection-title">Border Standards</div>
+          <div style="padding: 16px; border: 1px solid #E5E7EB; border-radius: 8px; margin-bottom: 12px;">
+            <strong>1px</strong> - All borders (cards, inputs, badges)
+          </div>
+          <div style="padding: 16px; border: 2px dashed #5159B0; border-radius: 8px; margin-bottom: 12px;">
+            <strong>2px dashed</strong> - Upload areas, placeholders only
+          </div>
+          
+          <div class="subsection-title">Border Radius</div>
+          <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+            <div style="width: 60px; height: 60px; background: #5159B0; border-radius: 6px;"></div>
+            <div style="font-size: 12px; color: #64748B; align-self: center;">6px - Badges, pills</div>
+          </div>
+          <div style="display: flex; gap: 12px; flex-wrap: wrap; margin-top: 12px;">
+            <div style="width: 60px; height: 60px; background: #5159B0; border-radius: 8px;"></div>
+            <div style="font-size: 12px; color: #64748B; align-self: center;">8px - Buttons, small cards</div>
+          </div>
+          <div style="display: flex; gap: 12px; flex-wrap: wrap; margin-top: 12px;">
+            <div style="width: 60px; height: 60px; background: #5159B0; border-radius: 12px;"></div>
+            <div style="font-size: 12px; color: #64748B; align-self: center;">12px - Cards, containers</div>
+          </div>
+        </div>
+        
+        <div>
+          <div class="subsection-title">Box Shadows</div>
+          <div style="padding: 16px; background: white; border-radius: 8px; margin-bottom: 12px; box-shadow: 0 2px 8px rgba(15, 23, 42, 0.04);">
+            <strong>Light:</strong> 0 2px 8px rgba(15, 23, 42, 0.04)
+          </div>
+          <div style="padding: 16px; background: white; border-radius: 8px; margin-bottom: 12px; box-shadow: 0 4px 16px rgba(15, 23, 42, 0.15);">
+            <strong>Elevated:</strong> 0 4px 16px rgba(15, 23, 42, 0.15)
+          </div>
+          <div style="padding: 16px; background: white; border-radius: 8px; box-shadow: 0 8px 32px rgba(81, 89, 176, 0.2);">
+            <strong>Featured:</strong> 0 8px 32px rgba(81, 89, 176, 0.2)
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- KEY RULES -->
+    <div class="section" style="background: linear-gradient(135deg, #EEF2FF 0%, #F8FAFC 100%); border-color: #5159B0;">
+      <div class="section-title" style="color: #5159B0;">Key Design Rules</div>
+      <div style="display: grid; gap: 12px;">
+        <div style="padding: 16px; background: white; border-radius: 8px; border: 1px solid #E5E7EB;">
+          ✅ <strong>Borders:</strong> Always 1px (never 2px or 3px) - use shadows for depth
+        </div>
+        <div style="padding: 16px; background: white; border-radius: 8px; border: 1px solid #E5E7EB;">
+          ✅ <strong>Border Radius:</strong> 6px (badges), 8px (buttons), 12px (cards)
+        </div>
+        <div style="padding: 16px; background: white; border-radius: 8px; border: 1px solid #E5E7EB;">
+          ✅ <strong>Dark Backgrounds:</strong> Use #1E293B (slate), NOT #0F172A (pure black)
+        </div>
+        <div style="padding: 16px; background: white; border-radius: 8px; border: 1px solid #E5E7EB;">
+          ✅ <strong>Text on Dark:</strong> #F1F5F9 (primary) → #94A3B8 (secondary) → #64748B (tertiary)
+        </div>
+        <div style="padding: 16px; background: white; border-radius: 8px; border: 1px solid #E5E7EB;">
+          ✅ <strong>Labels on Dark:</strong> Always #818CF8 (light indigo)
+        </div>
+        <div style="padding: 16px; background: white; border-radius: 8px; border: 1px solid #E5E7EB;">
+          ✅ <strong>Alert Colors:</strong> Red/Yellow/Green ONLY for notifications, not general UI
+        </div>
+        <div style="padding: 16px; background: white; border-radius: 8px; border: 1px solid #E5E7EB;">
+          ✅ <strong>Headings:</strong> Montserrat Bold, Body: Inter Regular, Code: Monospace
+        </div>
+      </div>
+    </div>
+    
+  </div>
+</body>
+</html>
