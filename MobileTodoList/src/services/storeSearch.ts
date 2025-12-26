@@ -28,122 +28,249 @@ type SearchParams = {
   };
 };
 
-// Mock store locations (replace with actual store locator APIs)
-const STORE_LOCATIONS = {
-  target: [
-    {
-      name: 'Target - Downtown',
-      address: '123 Main St',
-      latitude: 37.7749,
-      longitude: -122.4194,
-    },
-    {
-      name: 'Target - Westfield',
-      address: '456 Market St',
-      latitude: 37.7849,
-      longitude: -122.4094,
-    },
-  ],
-  walmart: [
-    {
-      name: 'Walmart Supercenter',
-      address: '789 Oak Ave',
-      latitude: 37.7649,
-      longitude: -122.4294,
-    },
-  ],
-  wholefoods: [
-    {
-      name: 'Whole Foods Market',
-      address: '321 Green St',
-      latitude: 37.7749,
-      longitude: -122.4094,
-    },
-  ],
-  safeway: [
-    {
-      name: 'Safeway',
-      address: '555 Pine St',
-      latitude: 37.7849,
-      longitude: -122.4194,
-    },
-  ],
-  seveneleven: [
-    {
-      name: '7-Eleven',
-      address: '100 Broadway',
-      latitude: 37.7799,
-      longitude: -122.4244,
-    },
-    {
-      name: '7-Eleven',
-      address: '234 Valencia St',
-      latitude: 37.7699,
-      longitude: -122.4144,
-    },
-  ],
-  circlek: [
-    {
-      name: 'Circle K',
-      address: '567 Mission St',
-      latitude: 37.7799,
-      longitude: -122.4194,
-    },
-  ],
-  homedepot: [
-    {
-      name: 'The Home Depot',
-      address: '901 Bayshore Blvd',
-      latitude: 37.7549,
-      longitude: -122.4094,
-    },
-  ],
-  lowes: [
-    {
-      name: "Lowe's Home Improvement",
-      address: '678 Harrison St',
-      latitude: 37.7749,
-      longitude: -122.3994,
-    },
-  ],
-  acehardware: [
-    {
-      name: 'Ace Hardware',
-      address: '432 Polk St',
-      latitude: 37.7849,
-      longitude: -122.4144,
-    },
-  ],
-  bestbuy: [
-    {
-      name: 'Best Buy',
-      address: '345 Geary St',
-      latitude: 37.7849,
-      longitude: -122.4244,
-    },
-  ],
-  cvs: [
-    {
-      name: 'CVS Pharmacy',
-      address: '789 Columbus Ave',
-      latitude: 37.7949,
-      longitude: -122.4144,
-    },
-    {
-      name: 'CVS Pharmacy',
-      address: '123 Van Ness Ave',
-      latitude: 37.7749,
-      longitude: -122.4244,
-    },
-  ],
-  walgreens: [
-    {
-      name: 'Walgreens',
-      address: '456 Castro St',
-      latitude: 37.7649,
-      longitude: -122.4144,
-    },
-  ],
+type StoreType = {
+  name: string;
+  keywords: string[];
+  placeTypes: string[];
+  logo: string;
+  searchUrl: (query: string) => string;
+  categoryPriority: number; // Lower = higher priority in search
+};
+
+// Comprehensive store type definitions for dynamic discovery
+const STORE_TYPES: Record<string, StoreType> = {
+  // Big Box Retail
+  target: {
+    name: 'Target',
+    keywords: ['target'],
+    placeTypes: ['department_store', 'store'],
+    logo: '🎯',
+    searchUrl: (q) => `https://www.target.com/s?searchTerm=${encodeURIComponent(q)}`,
+    categoryPriority: 1,
+  },
+  walmart: {
+    name: 'Walmart',
+    keywords: ['walmart'],
+    placeTypes: ['department_store', 'store'],
+    logo: '🟦',
+    searchUrl: (q) => `https://www.walmart.com/search?q=${encodeURIComponent(q)}`,
+    categoryPriority: 1,
+  },
+  costco: {
+    name: 'Costco',
+    keywords: ['costco'],
+    placeTypes: ['department_store', 'store'],
+    logo: '🛒',
+    searchUrl: (q) => `https://www.costco.com/CatalogSearch?keyword=${encodeURIComponent(q)}`,
+    categoryPriority: 2,
+  },
+  samsclub: {
+    name: "Sam's Club",
+    keywords: ['sams club', "sam's club"],
+    placeTypes: ['department_store', 'store'],
+    logo: '🏢',
+    searchUrl: (q) => `https://www.samsclub.com/s/${encodeURIComponent(q)}`,
+    categoryPriority: 2,
+  },
+  // Grocery Stores
+  wholefoods: {
+    name: 'Whole Foods',
+    keywords: ['whole foods'],
+    placeTypes: ['grocery_or_supermarket', 'supermarket', 'food'],
+    logo: '🥬',
+    searchUrl: (q) => `https://www.wholefoodsmarket.com/search?text=${encodeURIComponent(q)}`,
+    categoryPriority: 3,
+  },
+  safeway: {
+    name: 'Safeway',
+    keywords: ['safeway'],
+    placeTypes: ['grocery_or_supermarket', 'supermarket'],
+    logo: '🛒',
+    searchUrl: (q) => `https://www.safeway.com/shop/search-results.html?q=${encodeURIComponent(q)}`,
+    categoryPriority: 3,
+  },
+  kroger: {
+    name: 'Kroger',
+    keywords: ['kroger'],
+    placeTypes: ['grocery_or_supermarket', 'supermarket'],
+    logo: '🛒',
+    searchUrl: (q) => `https://www.kroger.com/search?query=${encodeURIComponent(q)}`,
+    categoryPriority: 3,
+  },
+  traderjoes: {
+    name: "Trader Joe's",
+    keywords: ['trader joe', "trader joe's"],
+    placeTypes: ['grocery_or_supermarket', 'supermarket'],
+    logo: '🌺',
+    searchUrl: (q) => `https://www.traderjoes.com/home/search?q=${encodeURIComponent(q)}`,
+    categoryPriority: 3,
+  },
+  albertsons: {
+    name: 'Albertsons',
+    keywords: ['albertsons'],
+    placeTypes: ['grocery_or_supermarket', 'supermarket'],
+    logo: '🛒',
+    searchUrl: (q) => `https://www.albertsons.com/shop/search-results.html?q=${encodeURIComponent(q)}`,
+    categoryPriority: 3,
+  },
+  publix: {
+    name: 'Publix',
+    keywords: ['publix'],
+    placeTypes: ['grocery_or_supermarket', 'supermarket'],
+    logo: '🛒',
+    searchUrl: (q) => `https://www.publix.com/shop?SearchTerm=${encodeURIComponent(q)}`,
+    categoryPriority: 3,
+  },
+  // Convenience Stores
+  seveneleven: {
+    name: '7-Eleven',
+    keywords: ['7-eleven', '7 eleven'],
+    placeTypes: ['convenience_store', 'store'],
+    logo: '🏪',
+    searchUrl: (q) => `https://www.7-eleven.com/search?q=${encodeURIComponent(q)}`,
+    categoryPriority: 5,
+  },
+  circlek: {
+    name: 'Circle K',
+    keywords: ['circle k'],
+    placeTypes: ['convenience_store', 'gas_station'],
+    logo: '⭕',
+    searchUrl: () => 'https://www.circlek.com/products',
+    categoryPriority: 5,
+  },
+  wawa: {
+    name: 'Wawa',
+    keywords: ['wawa'],
+    placeTypes: ['convenience_store', 'gas_station'],
+    logo: '🦆',
+    searchUrl: () => 'https://www.wawa.com',
+    categoryPriority: 5,
+  },
+  // Hardware Stores
+  homedepot: {
+    name: 'The Home Depot',
+    keywords: ['home depot'],
+    placeTypes: ['hardware_store', 'home_goods_store'],
+    logo: '🔨',
+    searchUrl: (q) => `https://www.homedepot.com/s/${encodeURIComponent(q)}`,
+    categoryPriority: 4,
+  },
+  lowes: {
+    name: "Lowe's",
+    keywords: ['lowes', "lowe's"],
+    placeTypes: ['hardware_store', 'home_goods_store'],
+    logo: '🛠️',
+    searchUrl: (q) => `https://www.lowes.com/search?searchTerm=${encodeURIComponent(q)}`,
+    categoryPriority: 4,
+  },
+  acehardware: {
+    name: 'Ace Hardware',
+    keywords: ['ace hardware'],
+    placeTypes: ['hardware_store'],
+    logo: '🔧',
+    searchUrl: (q) => `https://www.acehardware.com/search?query=${encodeURIComponent(q)}`,
+    categoryPriority: 4,
+  },
+  // Electronics & Tech
+  bestbuy: {
+    name: 'Best Buy',
+    keywords: ['best buy'],
+    placeTypes: ['electronics_store', 'store'],
+    logo: '💻',
+    searchUrl: (q) => `https://www.bestbuy.com/site/searchpage.jsp?st=${encodeURIComponent(q)}`,
+    categoryPriority: 2,
+  },
+  microcenter: {
+    name: 'Micro Center',
+    keywords: ['micro center', 'microcenter'],
+    placeTypes: ['electronics_store'],
+    logo: '🖥️',
+    searchUrl: (q) => `https://www.microcenter.com/search/search_results.aspx?N=&cat=&Ntt=${encodeURIComponent(q)}`,
+    categoryPriority: 2,
+  },
+  applestore: {
+    name: 'Apple Store',
+    keywords: ['apple store', 'apple'],
+    placeTypes: ['electronics_store', 'store'],
+    logo: '🍎',
+    searchUrl: (q) => `https://www.apple.com/search/${encodeURIComponent(q)}`,
+    categoryPriority: 2,
+  },
+  // Pharmacy/Health
+  cvs: {
+    name: 'CVS Pharmacy',
+    keywords: ['cvs'],
+    placeTypes: ['pharmacy', 'drugstore', 'store'],
+    logo: '💊',
+    searchUrl: (q) => `https://www.cvs.com/search?searchTerm=${encodeURIComponent(q)}`,
+    categoryPriority: 3,
+  },
+  walgreens: {
+    name: 'Walgreens',
+    keywords: ['walgreens'],
+    placeTypes: ['pharmacy', 'drugstore', 'store'],
+    logo: '⚕️',
+    searchUrl: (q) => `https://www.walgreens.com/search/results.jsp?Ntt=${encodeURIComponent(q)}`,
+    categoryPriority: 3,
+  },
+  riteaid: {
+    name: 'Rite Aid',
+    keywords: ['rite aid'],
+    placeTypes: ['pharmacy', 'drugstore'],
+    logo: '💊',
+    searchUrl: (q) => `https://www.riteaid.com/shop/catalogsearch/result/?q=${encodeURIComponent(q)}`,
+    categoryPriority: 3,
+  },
+  // Specialty Retail
+  petco: {
+    name: 'Petco',
+    keywords: ['petco'],
+    placeTypes: ['pet_store', 'store'],
+    logo: '🐾',
+    searchUrl: (q) => `https://www.petco.com/shop/en/petcostore/search?query=${encodeURIComponent(q)}`,
+    categoryPriority: 6,
+  },
+  petsmart: {
+    name: 'PetSmart',
+    keywords: ['petsmart'],
+    placeTypes: ['pet_store', 'store'],
+    logo: '🐕',
+    searchUrl: (q) => `https://www.petsmart.com/search/?q=${encodeURIComponent(q)}`,
+    categoryPriority: 6,
+  },
+  staples: {
+    name: 'Staples',
+    keywords: ['staples'],
+    placeTypes: ['store', 'home_goods_store'],
+    logo: '📎',
+    searchUrl: (q) => `https://www.staples.com/search?query=${encodeURIComponent(q)}`,
+    categoryPriority: 4,
+  },
+  officeDepot: {
+    name: 'Office Depot',
+    keywords: ['office depot'],
+    placeTypes: ['store', 'home_goods_store'],
+    logo: '📋',
+    searchUrl: (q) => `https://www.officedepot.com/catalog/search.do?Ntt=${encodeURIComponent(q)}`,
+    categoryPriority: 4,
+  },
+  bedbathbeyond: {
+    name: 'Bed Bath & Beyond',
+    keywords: ['bed bath beyond', 'bed bath & beyond'],
+    placeTypes: ['home_goods_store', 'store'],
+    logo: '🛏️',
+    searchUrl: (q) => `https://www.bedbathandbeyond.com/store/s/${encodeURIComponent(q)}`,
+    categoryPriority: 4,
+  },
+  // Online
+  amazon: {
+    name: 'Amazon',
+    keywords: ['amazon'],
+    placeTypes: [],
+    logo: '📦',
+    searchUrl: (q) => `https://www.amazon.com/s?k=${encodeURIComponent(q)}`,
+    categoryPriority: 1,
+  },
 };
 
 const calculateDistance = (
@@ -163,6 +290,93 @@ const calculateDistance = (
       Math.sin(dLon / 2);
   const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
   return R * c;
+};
+
+// Dynamic store finder using location-based search
+// In production, integrate with Google Places API, Yelp API, or Foursquare
+const findNearbyStores = async (
+  storeType: StoreType,
+  userLocation?: {latitude: number; longitude: number},
+  radius: number = 10, // km
+): Promise<Array<{
+  name: string;
+  address: string;
+  latitude: number;
+  longitude: number;
+  distance?: number;
+}>> => {
+  if (!userLocation) {
+    // Return mock data if no location
+    return generateMockStoreLocations(storeType.name);
+  }
+
+  try {
+    // TODO: Replace with real Google Places API call
+    // Example implementation:
+    /*
+    const response = await axios.get('https://maps.googleapis.com/maps/api/place/nearbysearch/json', {
+      params: {
+        key: process.env.GOOGLE_MAPS_API_KEY,
+        location: `${userLocation.latitude},${userLocation.longitude}`,
+        radius: radius * 1000, // Convert km to meters
+        keyword: storeType.keywords.join('|'),
+        type: storeType.placeTypes[0],
+      },
+    });
+
+    return response.data.results.map((place: any) => ({
+      name: place.name,
+      address: place.vicinity,
+      latitude: place.geometry.location.lat,
+      longitude: place.geometry.location.lng,
+      distance: calculateDistance(
+        userLocation.latitude,
+        userLocation.longitude,
+        place.geometry.location.lat,
+        place.geometry.location.lng,
+      ),
+    }));
+    */
+
+    // For now, return mock data with calculated distances
+    const mockStores = generateMockStoreLocations(storeType.name);
+    return mockStores.map(store => ({
+      ...store,
+      distance: calculateDistance(
+        userLocation.latitude,
+        userLocation.longitude,
+        store.latitude,
+        store.longitude,
+      ),
+    }));
+  } catch (error) {
+    console.error(`Error finding ${storeType.name} stores:`, error);
+    return generateMockStoreLocations(storeType.name);
+  }
+};
+
+// Generate mock store locations (fallback when no API available)
+const generateMockStoreLocations = (
+  storeName: string,
+): Array<{name: string; address: string; latitude: number; longitude: number}> => {
+  // Generate 1-3 random nearby locations
+  const baseLocations = [
+    {lat: 37.7749, lng: -122.4194, addr: 'Downtown'},
+    {lat: 37.7849, lng: -122.4094, addr: 'North Beach'},
+    {lat: 37.7649, lng: -122.4294, addr: 'Mission District'},
+    {lat: 37.7549, lng: -122.4094, addr: 'Bayshore'},
+    {lat: 37.7949, lng: -122.4144, addr: 'Financial District'},
+  ];
+
+  const count = Math.min(Math.floor(Math.random() * 2) + 1, 3);
+  const selected = baseLocations.slice(0, count);
+
+  return selected.map((loc, idx) => ({
+    name: `${storeName}${count > 1 ? ` - ${loc.addr}` : ''}`,
+    address: `${Math.floor(Math.random() * 900 + 100)} ${loc.addr} St`,
+    latitude: loc.lat + (Math.random() - 0.5) * 0.01,
+    longitude: loc.lng + (Math.random() - 0.5) * 0.01,
+  }));
 };
 
 const findNearestStore = (
@@ -202,407 +416,87 @@ const findNearestStore = (
   return {...nearest, distance: minDistance};
 };
 
-// Target API simulation (in production, use Target's RedCard API or web scraping)
-const searchTarget = async (params: SearchParams): Promise<StoreResult[]> => {
+// Generic store search function that works for any store type
+const searchStoreType = async (
+  storeType: StoreType,
+  params: SearchParams,
+): Promise<StoreResult[]> => {
   try {
-    // In production, integrate with Target's API or scrape their website
-    // For now, return mock data
     const query = params.productBrand
       ? `${params.productBrand} ${params.searchTerm}`
       : params.searchTerm;
+
+    // Find nearby store locations
+    const stores = await findNearbyStores(storeType, params.userLocation);
+    if (!stores.length) {
+      return [];
+    }
+
+    const nearestStore = findNearestStore(stores, params.userLocation);
 
     // Simulate API delay
-    await new Promise(resolve => setTimeout(resolve, 300));
+    await new Promise(resolve => setTimeout(resolve, 200 + Math.random() * 300));
 
-    const nearestStore = findNearestStore(
-      STORE_LOCATIONS.target,
-      params.userLocation,
-    );
+    // Generate mock pricing based on store category
+    let basePrice = 10 + Math.random() * 90;
+    if (storeType.categoryPriority === 1) basePrice *= 1.2; // Big box retail
+    if (storeType.categoryPriority === 2) basePrice *= 1.5; // Electronics
+    if (storeType.categoryPriority === 5) basePrice *= 0.8; // Convenience stores
 
     return [
       {
-        store: 'Target',
-        storeLogo: '🎯',
+        store: storeType.name,
+        storeLogo: storeType.logo,
         productName: query,
         brand: params.productBrand,
-        price: 12.99,
-        inStock: true,
-        availability: 'In Stock',
+        price: Math.round(basePrice * 100) / 100,
+        inStock: Math.random() > 0.2, // 80% in stock
+        availability: Math.random() > 0.2 ? 'In Stock' : 
+                      Math.random() > 0.5 ? 'Low Stock' : 'Out of Stock',
         storeLocation: nearestStore,
-        url: `https://www.target.com/s?searchTerm=${encodeURIComponent(query)}`,
+        url: storeType.searchUrl(query),
       },
     ];
   } catch (error) {
-    console.error('Target search error:', error);
+    console.error(`${storeType.name} search error:`, error);
     return [];
   }
 };
 
-// Walmart API simulation
-const searchWalmart = async (params: SearchParams): Promise<StoreResult[]> => {
-  try {
-    const query = params.productBrand
-      ? `${params.productBrand} ${params.searchTerm}`
-      : params.searchTerm;
-
-    await new Promise(resolve => setTimeout(resolve, 400));
-
-    const nearestStore = findNearestStore(
-      STORE_LOCATIONS.walmart,
-      params.userLocation,
-    );
-
-    return [
-      {
-        store: 'Walmart',
-        storeLogo: '🟦',
-        productName: query,
-        brand: params.productBrand,
-        price: 11.49,
-        inStock: true,
-        availability: 'In Stock',
-        storeLocation: nearestStore,
-        url: `https://www.walmart.com/search?q=${encodeURIComponent(query)}`,
-      },
-    ];
-  } catch (error) {
-    console.error('Walmart search error:', error);
-    return [];
-  }
-};
-
-// Grocery store search (Whole Foods, Safeway, etc.)
-const searchGrocery = async (params: SearchParams): Promise<StoreResult[]> => {
-  try {
-    const query = params.productBrand
-      ? `${params.productBrand} ${params.searchTerm}`
-      : params.searchTerm;
-
-    await new Promise(resolve => setTimeout(resolve, 350));
-
-    const results: StoreResult[] = [];
-
-    // Whole Foods
-    const wholeFoodsStore = findNearestStore(
-      STORE_LOCATIONS.wholefoods,
-      params.userLocation,
-    );
-    results.push({
-      store: 'Whole Foods',
-      storeLogo: '🥬',
-      productName: query,
-      brand: params.productBrand,
-      price: 14.99,
-      inStock: true,
-      availability: 'Check Store',
-      storeLocation: wholeFoodsStore,
-      url: `https://www.wholefoodsmarket.com/search?text=${encodeURIComponent(
-        query,
-      )}`,
-    });
-
-    // Safeway
-    const safewayStore = findNearestStore(
-      STORE_LOCATIONS.safeway,
-      params.userLocation,
-    );
-    results.push({
-      store: 'Safeway',
-      storeLogo: '🛒',
-      productName: query,
-      brand: params.productBrand,
-      price: 10.99,
-      inStock: true,
-      availability: 'In Stock',
-      storeLocation: safewayStore,
-      url: `https://www.safeway.com/shop/search-results.html?q=${encodeURIComponent(
-        query,
-      )}`,
-    });
-
-    return results;
-  } catch (error) {
-    console.error('Grocery search error:', error);
-    return [];
-  }
-};
-
-// Amazon Product API simulation
-const searchAmazon = async (params: SearchParams): Promise<StoreResult[]> => {
-  try {
-    // In production, use Amazon Product Advertising API
-    const query = params.productBrand
-      ? `${params.productBrand} ${params.searchTerm}`
-      : params.searchTerm;
-
-    await new Promise(resolve => setTimeout(resolve, 500));
-
-    return [
-      {
-        store: 'Amazon',
-        storeLogo: '📦',
-        productName: query,
-        brand: params.productBrand,
-        price: 13.99,
-        inStock: true,
-        availability: 'In Stock',
-        url: `https://www.amazon.com/s?k=${encodeURIComponent(query)}`,
-      },
-    ];
-  } catch (error) {
-    console.error('Amazon search error:', error);
-    return [];
-  }
-};
-
-// Convenience stores search (7-Eleven, Circle K)
-const searchConvenienceStores = async (
-  params: SearchParams,
-): Promise<StoreResult[]> => {
-  try {
-    const query = params.productBrand
-      ? `${params.productBrand} ${params.searchTerm}`
-      : params.searchTerm;
-
-    await new Promise(resolve => setTimeout(resolve, 300));
-
-    const results: StoreResult[] = [];
-
-    // 7-Eleven
-    const sevenElevenStore = findNearestStore(
-      STORE_LOCATIONS.seveneleven,
-      params.userLocation,
-    );
-    results.push({
-      store: '7-Eleven',
-      storeLogo: '🏪',
-      productName: query,
-      brand: params.productBrand,
-      price: 8.99,
-      inStock: true,
-      availability: 'In Stock',
-      storeLocation: sevenElevenStore,
-      url: `https://www.7-eleven.com/search?q=${encodeURIComponent(query)}`,
-    });
-
-    // Circle K
-    const circleKStore = findNearestStore(
-      STORE_LOCATIONS.circlek,
-      params.userLocation,
-    );
-    results.push({
-      store: 'Circle K',
-      storeLogo: '⭕',
-      productName: query,
-      brand: params.productBrand,
-      price: 9.49,
-      inStock: true,
-      availability: 'Check Store',
-      storeLocation: circleKStore,
-      url: `https://www.circlek.com/products`,
-    });
-
-    return results;
-  } catch (error) {
-    console.error('Convenience store search error:', error);
-    return [];
-  }
-};
-
-// Hardware stores search (Home Depot, Lowe's, Ace Hardware)
-const searchHardwareStores = async (
-  params: SearchParams,
-): Promise<StoreResult[]> => {
-  try {
-    const query = params.productBrand
-      ? `${params.productBrand} ${params.searchTerm}`
-      : params.searchTerm;
-
-    await new Promise(resolve => setTimeout(resolve, 400));
-
-    const results: StoreResult[] = [];
-
-    // Home Depot
-    const homeDepotStore = findNearestStore(
-      STORE_LOCATIONS.homedepot,
-      params.userLocation,
-    );
-    results.push({
-      store: 'The Home Depot',
-      storeLogo: '🔨',
-      productName: query,
-      brand: params.productBrand,
-      price: 24.99,
-      inStock: true,
-      availability: 'In Stock',
-      storeLocation: homeDepotStore,
-      url: `https://www.homedepot.com/s/${encodeURIComponent(query)}`,
-    });
-
-    // Lowe's
-    const lowesStore = findNearestStore(
-      STORE_LOCATIONS.lowes,
-      params.userLocation,
-    );
-    results.push({
-      store: "Lowe's",
-      storeLogo: '🛠️',
-      productName: query,
-      brand: params.productBrand,
-      price: 23.49,
-      inStock: true,
-      availability: 'In Stock',
-      storeLocation: lowesStore,
-      url: `https://www.lowes.com/search?searchTerm=${encodeURIComponent(
-        query,
-      )}`,
-    });
-
-    // Ace Hardware
-    const aceStore = findNearestStore(
-      STORE_LOCATIONS.acehardware,
-      params.userLocation,
-    );
-    results.push({
-      store: 'Ace Hardware',
-      storeLogo: '🔧',
-      productName: query,
-      brand: params.productBrand,
-      price: 26.99,
-      inStock: true,
-      availability: 'Check Store',
-      storeLocation: aceStore,
-      url: `https://www.acehardware.com/search?query=${encodeURIComponent(
-        query,
-      )}`,
-    });
-
-    return results;
-  } catch (error) {
-    console.error('Hardware store search error:', error);
-    return [];
-  }
-};
-
-// Retail stores search (Best Buy, CVS, Walgreens)
-const searchRetailStores = async (
-  params: SearchParams,
-): Promise<StoreResult[]> => {
-  try {
-    const query = params.productBrand
-      ? `${params.productBrand} ${params.searchTerm}`
-      : params.searchTerm;
-
-    await new Promise(resolve => setTimeout(resolve, 350));
-
-    const results: StoreResult[] = [];
-
-    // Best Buy
-    const bestBuyStore = findNearestStore(
-      STORE_LOCATIONS.bestbuy,
-      params.userLocation,
-    );
-    results.push({
-      store: 'Best Buy',
-      storeLogo: '💻',
-      productName: query,
-      brand: params.productBrand,
-      price: 199.99,
-      inStock: true,
-      availability: 'In Stock',
-      storeLocation: bestBuyStore,
-      url: `https://www.bestbuy.com/site/searchpage.jsp?st=${encodeURIComponent(
-        query,
-      )}`,
-    });
-
-    // CVS
-    const cvsStore = findNearestStore(
-      STORE_LOCATIONS.cvs,
-      params.userLocation,
-    );
-    results.push({
-      store: 'CVS Pharmacy',
-      storeLogo: '💊',
-      productName: query,
-      brand: params.productBrand,
-      price: 15.99,
-      inStock: true,
-      availability: 'In Stock',
-      storeLocation: cvsStore,
-      url: `https://www.cvs.com/search?searchTerm=${encodeURIComponent(query)}`,
-    });
-
-    // Walgreens
-    const walgreensStore = findNearestStore(
-      STORE_LOCATIONS.walgreens,
-      params.userLocation,
-    );
-    results.push({
-      store: 'Walgreens',
-      storeLogo: '⚕️',
-      productName: query,
-      brand: params.productBrand,
-      price: 14.49,
-      inStock: true,
-      availability: 'Low Stock',
-      storeLocation: walgreensStore,
-      url: `https://www.walgreens.com/search/results.jsp?Ntt=${encodeURIComponent(
-        query,
-      )}`,
-    });
-
-    return results;
-  } catch (error) {
-    console.error('Retail store search error:', error);
-    return [];
-  }
-};
-
-// Main search function that queries all stores
+// Main search function that queries all store types
 export const searchStores = async (
   params: SearchParams,
 ): Promise<StoreResult[]> => {
   try {
-    // Execute all searches in parallel
-    const [
-      targetResults,
-      walmartResults,
-      groceryResults,
-      amazonResults,
-      convenienceResults,
-      hardwareResults,
-      retailResults,
-    ] = await Promise.all([
-      searchTarget(params),
-      searchWalmart(params),
-      searchGrocery(params),
-      searchAmazon(params),
-      searchConvenienceStores(params),
-      searchHardwareStores(params),
-      searchRetailStores(params),
-    ]);
+    // Get all store types and prioritize based on location and category
+    const storeTypesToSearch = Object.values(STORE_TYPES)
+      .sort((a, b) => a.categoryPriority - b.categoryPriority);
 
-    const allResults = [
-      ...targetResults,
-      ...walmartResults,
-      ...groceryResults,
-      ...amazonResults,
-      ...convenienceResults,
-      ...hardwareResults,
-      ...retailResults,
-    ];
+    // Execute all searches in parallel
+    const allResults = await Promise.all(
+      storeTypesToSearch.map(storeType => searchStoreType(storeType, params))
+    );
+
+    const flatResults = allResults.flat().filter(result => result.inStock || Math.random() > 0.5);
 
     // Sort by distance if user location is available
     if (params.userLocation) {
-      allResults.sort((a, b) => {
+      flatResults.sort((a, b) => {
         const distA = a.storeLocation?.distance ?? Infinity;
         const distB = b.storeLocation?.distance ?? Infinity;
         return distA - distB;
       });
+    } else {
+      // Sort by category priority if no location
+      flatResults.sort((a, b) => {
+        const priorityA = STORE_TYPES[a.store.toLowerCase().replace(/[^a-z]/g, '')]?.categoryPriority ?? 999;
+        const priorityB = STORE_TYPES[b.store.toLowerCase().replace(/[^a-z]/g, '')]?.categoryPriority ?? 999;
+        return priorityA - priorityB;
+      });
     }
 
-    return allResults;
+    // Return top results (limit to prevent overwhelming UI)
+    return flatResults.slice(0, 20);
   } catch (error) {
     console.error('Store search error:', error);
     return [];
