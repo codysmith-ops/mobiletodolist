@@ -12,6 +12,9 @@
   "dependencies": {
     "@react-native-community/geolocation": "^3.4.0",
     "@react-native-voice/voice": "^3.2.4",
+    "@types/cheerio": "^0.22.35",
+    "axios": "^1.13.2",
+    "cheerio": "^1.1.2",
     "geolib": "^3.3.4",
     "nanoid": "^5.1.6",
     "react": "18.2.0",

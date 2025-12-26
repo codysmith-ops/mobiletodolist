@@ -28,6 +28,7 @@ import MlkitOcr from 'react-native-mlkit-ocr';
 import {useTodoStore, NavPreference, Task} from './src/store';
 import {palette, radius, shadow, spacing} from './src/theme';
 import {useVoiceInput} from './src/hooks/useVoiceInput';
+import {searchStores, StoreResult} from './src/services/storeSearch';
 
 const SPEED_MPS = 9; // roughly 32 km/h city driving
 
@@ -59,6 +60,8 @@ const App = (): React.JSX.Element => {
     | null
   >(null);
   const [locationStatus, setLocationStatus] = useState<string>('Detecting location...');
+  const [storeResults, setStoreResults] = useState<StoreResult[]>([]);
+  const [isSearchingStores, setIsSearchingStores] = useState(false);
   const alertedRef = useRef<Record<string, number>>({});
 
   const {
@@ -77,7 +80,9 @@ const App = (): React.JSX.Element => {
   }, [transcript]);
 
   useEffect(() => {
-    Geolocation.requestAuthorization?.('always');
+    if (Platform.OS === 'ios') {
+      Geolocation.requestAuthorization?.();
+    }
     
     // Get initial position immediately
     Geolocation.getCurrentPosition(
@@ -246,25 +251,55 @@ const App = (): React.JSX.Element => {
       // Extract brand and product details
       const allText = recognitionResult.map(block => block.text).join(' ');
       
-      // Simple heuristic: first line or first few words are likely brand/product
-      const lines = allText.split('\n').filter(l => l.trim());
+      // Simple heuristic: first line is often the brand
+      const lines = recognitionResult.map(block => block.text);
       if (lines.length > 0) {
         setProductBrand(lines[0]);
-        if (lines.length > 1) {
-          setProductDetails(lines.slice(1).join(' '));
-        }
-        // Auto-set title if empty
-        if (!title) {
-          setTitle(lines[0]);
-        }
+        setProductDetails(allText);
+        
+        // Auto-search stores when product is detected
+        handleStoreSearch(lines[0], allText);
       }
-
-      Alert.alert('Photo captured', 'Product details extracted from image');
     } catch (error) {
-      console.error('Camera error:', error);
-      Alert.alert('Error', 'Failed to capture or process photo');
+      console.error('Camera/OCR error:', error);
+      Alert.alert('Error', 'Failed to process image');
     }
-  }, [title]);
+  }, []);
+
+  const handleStoreSearch = useCallback(async (brand?: string, details?: string) => {
+    const searchTerm = title || brand || details;
+    if (!searchTerm?.trim()) {
+      Alert.alert('Search required', 'Please enter a product name or take a photo');
+      return;
+    }
+
+    setIsSearchingStores(true);
+    try {
+      const results = await searchStores({
+        productBrand: productBrand || brand,
+        productDetails: productDetails || details,
+        searchTerm: searchTerm.trim(),
+        userLocation: currentPosition || undefined,
+      });
+      setStoreResults(results);
+      
+      if (results.length === 0) {
+        Alert.alert('No results', 'No stores found for this product');
+      }
+    } catch (error) {
+      console.error('Store search error:', error);
+      Alert.alert('Search failed', 'Could not search stores at this time');
+    } finally {
+      setIsSearchingStores(false);
+    }
+  }, [title, productBrand, productDetails, currentPosition]);
+
+  const clearImage = useCallback(() => {
+    setImageUri(undefined);
+    setProductBrand('');
+    setProductDetails('');
+    setStoreResults([]);
+  }, []);
 
   const optimizeRoute = useCallback(() => {
     if (!currentPosition) {
@@ -429,6 +464,11 @@ const App = (): React.JSX.Element => {
             label="📸 Take photo"
             onPress={takePhoto}
           />
+          <GhostButton
+            label={isSearchingStores ? "Searching stores..." : "🔍 Search stores"}
+            onPress={() => handleStoreSearch()}
+            disabled={isSearchingStores}
+          />
 
           <View style={styles.row}>
             <PrimaryButton label="Add" onPress={handleAdd} />
@@ -439,6 +479,60 @@ const App = (): React.JSX.Element => {
           </View>
           {voiceError ? <Text style={styles.errorText}>{voiceError}</Text> : null}
         </View>
+
+        {storeResults.length > 0 && (
+          <View style={styles.card}>
+            <Text style={styles.cardTitle}>Store Availability</Text>
+            <Text style={styles.helperText}>
+              {storeResults.length} store{storeResults.length === 1 ? '' : 's'} found
+              {currentPosition ? ' - sorted by distance' : ''}
+            </Text>
+            <View style={styles.storeList}>
+              {storeResults.map((result, idx) => (
+                <TouchableOpacity
+                  key={idx}
+                  style={styles.storeCard}
+                  onPress={() => result.url && Linking.openURL(result.url)}>
+                  <View style={styles.storeHeader}>
+                    <View style={styles.storeNameRow}>
+                      <Text style={styles.storeLogo}>{result.storeLogo}</Text>
+                      <Text style={styles.storeName}>{result.store}</Text>
+                    </View>
+                    <View style={[
+                      styles.availabilityBadge,
+                      result.inStock ? styles.inStockBadge : styles.outOfStockBadge
+                    ]}>
+                      <Text style={styles.availabilityText}>{result.availability}</Text>
+                    </View>
+                  </View>
+                  <Text style={styles.productName} numberOfLines={1}>
+                    {result.productName}
+                  </Text>
+                  {result.price && (
+                    <Text style={styles.price}>${result.price.toFixed(2)}</Text>
+                  )}
+                  {result.storeLocation && (
+                    <View style={styles.storeLocationInfo}>
+                      <Text style={styles.storeLocationName} numberOfLines={1}>
+                        📍 {result.storeLocation.name}
+                      </Text>
+                      <Text style={styles.storeAddress} numberOfLines={1}>
+                        {result.storeLocation.address}
+                      </Text>
+                      {result.storeLocation.distance !== undefined && (
+                        <Text style={styles.distance}>
+                          {result.storeLocation.distance < 1
+                            ? `${(result.storeLocation.distance * 1000).toFixed(0)}m away`
+                            : `${result.storeLocation.distance.toFixed(1)}km away`}
+                        </Text>
+                      )}
+                    </View>
+                  )}
+                </TouchableOpacity>
+              ))}
+            </View>
+          </View>
+        )}
 
         <View style={styles.card}>
           <Text style={styles.cardTitle}>Navigation preference</Text>
@@ -525,12 +619,17 @@ const PrimaryButton = ({
 const GhostButton = ({
   label,
   onPress,
+  disabled,
 }: {
   label: string;
   onPress: () => void;
+  disabled?: boolean;
 }) => (
-  <TouchableOpacity style={styles.ghostButton} onPress={onPress}>
-    <Text style={styles.ghostButtonText}>{label}</Text>
+  <TouchableOpacity 
+    style={[styles.ghostButton, disabled && styles.ghostButtonDisabled]} 
+    onPress={onPress}
+    disabled={disabled}>
+    <Text style={[styles.ghostButtonText, disabled && styles.ghostButtonTextDisabled]}>{label}</Text>
   </TouchableOpacity>
 );
 
@@ -804,6 +903,12 @@ const styles = StyleSheet.create({
     color: palette.primary,
     fontWeight: '700',
   },
+  ghostButtonDisabled: {
+    opacity: 0.5,
+  },
+  ghostButtonTextDisabled: {
+    color: palette.muted,
+  },
   navRow: {
     flexDirection: 'row',
     gap: spacing.sm,
@@ -942,6 +1047,87 @@ const styles = StyleSheet.create({
   helperText: {
     color: palette.muted,
     marginTop: spacing.xs,
+  },
+  storeList: {
+    marginTop: spacing.md,
+    gap: spacing.md,
+  },
+  storeCard: {
+    backgroundColor: palette.surface,
+    borderRadius: radius.md,
+    padding: spacing.md,
+    borderWidth: 1,
+    borderColor: palette.border,
+    ...shadow,
+  },
+  storeHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: spacing.xs,
+  },
+  storeNameRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.sm,
+    flex: 1,
+  },
+  storeLogo: {
+    fontSize: 24,
+  },
+  storeName: {
+    fontSize: 16,
+    fontWeight: '700',
+    color: palette.text,
+  },
+  availabilityBadge: {
+    paddingHorizontal: spacing.sm,
+    paddingVertical: spacing.xs,
+    borderRadius: radius.sm,
+  },
+  inStockBadge: {
+    backgroundColor: '#10B981',
+  },
+  outOfStockBadge: {
+    backgroundColor: '#DC2626',
+  },
+  availabilityText: {
+    color: '#FFFFFF',
+    fontSize: 12,
+    fontWeight: '700',
+  },
+  productName: {
+    fontSize: 14,
+    color: palette.text,
+    marginBottom: spacing.xs,
+  },
+  price: {
+    fontSize: 18,
+    fontWeight: '700',
+    color: palette.primary,
+    marginBottom: spacing.xs,
+  },
+  storeLocationInfo: {
+    marginTop: spacing.xs,
+    paddingTop: spacing.xs,
+    borderTopWidth: 1,
+    borderTopColor: palette.border,
+  },
+  storeLocationName: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: palette.text,
+    marginBottom: 2,
+  },
+  storeAddress: {
+    fontSize: 12,
+    color: palette.muted,
+    marginBottom: 2,
+  },
+  distance: {
+    fontSize: 12,
+    color: palette.primary,
+    fontWeight: '600',
   },
 });
 
